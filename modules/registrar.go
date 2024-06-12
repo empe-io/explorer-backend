@@ -2,6 +2,7 @@ package modules
 
 import (
 	"github.com/forbole/callisto/v4/modules/actions"
+	"github.com/forbole/callisto/v4/modules/diddoc"
 	"github.com/forbole/callisto/v4/modules/types"
 
 	"github.com/forbole/juno/v5/modules/pruning"
@@ -86,6 +87,7 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 	stakingModule := staking.NewModule(sources.StakingSource, cdc, db)
 	govModule := gov.NewModule(sources.GovSource, distrModule, mintModule, slashingModule, stakingModule, cdc, db)
 	upgradeModule := upgrade.NewModule(db, stakingModule)
+	didDocModule := diddoc.NewModule(cdc, db)
 
 	return []jmodules.Module{
 		messages.NewModule(r.parser, cdc, ctx.Database),
@@ -107,5 +109,6 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 		slashingModule,
 		stakingModule,
 		upgradeModule,
+		didDocModule,
 	}
 }
