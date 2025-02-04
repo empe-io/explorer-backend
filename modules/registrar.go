@@ -29,6 +29,8 @@ import (
 	"github.com/forbole/callisto/v4/modules/mint"
 	"github.com/forbole/callisto/v4/modules/modules"
 	"github.com/forbole/callisto/v4/modules/pricefeed"
+	topaccounts "github.com/forbole/callisto/v4/modules/top_accounts"
+
 	"github.com/forbole/callisto/v4/modules/staking"
 	"github.com/forbole/callisto/v4/modules/upgrade"
 	juno "github.com/forbole/juno/v5/types"
@@ -75,7 +77,7 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 	}
 
 	actionsModule := actions.NewModule(ctx.JunoConfig, ctx.EncodingConfig)
-	authModule := auth.NewModule(r.parser, cdc, db)
+	authModule := auth.NewModule(sources.AuthSource, r.parser, cdc, db)
 	bankModule := bank.NewModule(r.parser, sources.BankSource, cdc, db)
 	consensusModule := consensus.NewModule(db)
 	dailyRefetchModule := dailyrefetch.NewModule(ctx.Proxy, db)
@@ -88,6 +90,7 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 	govModule := gov.NewModule(sources.GovSource, distrModule, mintModule, slashingModule, stakingModule, cdc, db)
 	upgradeModule := upgrade.NewModule(db, stakingModule)
 	didDocModule := diddoc.NewModule(cdc, db)
+	topAccountsModule := topaccounts.NewModule(authModule, sources.AuthSource, bankModule, distrModule, stakingModule, r.parser, cdc, ctx.Proxy, db)
 
 	return []jmodules.Module{
 		messages.NewModule(r.parser, cdc, ctx.Database),
@@ -110,5 +113,6 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 		stakingModule,
 		upgradeModule,
 		didDocModule,
+		topAccountsModule,
 	}
 }

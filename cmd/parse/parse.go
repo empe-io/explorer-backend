@@ -1,6 +1,7 @@
 package parse
 
 import (
+	"github.com/forbole/callisto/v4/cmd/parse/top_accounts"
 	parse "github.com/forbole/juno/v5/cmd/parse/types"
 	"github.com/spf13/cobra"
 
@@ -39,6 +40,7 @@ func NewParseCmd(parseCfg *parse.Config) *cobra.Command {
 		parsemint.NewMintCmd(parseCfg),
 		parsepricefeed.NewPricefeedCmd(parseCfg),
 		parsestaking.NewStakingCmd(parseCfg),
+		top_accounts.NewTopAccountsCmd(parseCfg),
 		parsetransaction.NewTransactionsCmd(parseCfg),
 	)
 

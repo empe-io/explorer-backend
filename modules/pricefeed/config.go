@@ -18,11 +18,14 @@ func NewConfig(tokens []types.Token) *Config {
 	}
 }
 
+var PricefeedCfg *Config
+
 func ParseConfig(bz []byte) (*Config, error) {
 	type T struct {
 		Config *Config `yaml:"pricefeed"`
 	}
 	var cfg T
 	err := yaml.Unmarshal(bz, &cfg)
+	PricefeedCfg = cfg.Config
 	return cfg.Config, err
 }
