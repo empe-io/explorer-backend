@@ -14,5 +14,5 @@ select_permissions:
     - min_self_delegation
     - height
     filter: {}
-    limit: 100
+    limit: 1000
   role: anonymous

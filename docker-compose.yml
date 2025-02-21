@@ -8,8 +8,8 @@ services:
     restart: always
     environment:
       ## postgres database to store Hasura metadata
-      HASURA_GRAPHQL_DATABASE_URL: "postgres://admin:admin@192.168.1.15:5438/callisto-test"
-      HASURA_GRAPHQL_METADATA_DATABASE_URL: "postgres://admin:admin@192.168.1.15:5438/callisto-test"
+      HASURA_GRAPHQL_DATABASE_URL: "postgres://admin:admin@192.168.100.233:5438/callisto-test"
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: "postgres://admin:admin@192.168.100.233:5438/callisto-test"
       ## this env var can be used to add the above postgres database to Hasura as a data source. this can be removed/updated based on your needs
       #PG_DATABASE_URL: postgres://callisto:VRaASqPx985fq43kRJGgpcxU@172.17.0.1:5432/postgres
       ## enable the console served by server
