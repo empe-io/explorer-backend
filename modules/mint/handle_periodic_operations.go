@@ -1,7 +1,6 @@
 package mint
 
 import (
-	"fmt"
 	"github.com/forbole/callisto/v4/modules/utils"
 
 	"github.com/go-co-op/gocron"
@@ -13,8 +12,7 @@ func (m *Module) RegisterPeriodicOperations(scheduler *gocron.Scheduler) error {
 	log.Debug().Str("module", "mint").Msg("setting up periodic tasks")
 
 	// Setup a cron job to run every midnight
-	if _, err := scheduler.Every(1).Minute().Do(func() {
-		fmt.Println("UpdateInflation")
+	if _, err := scheduler.Every(1).Day().At("00:00").Do(func() {
 		utils.WatchMethod(m.UpdateInflation)
 	}); err != nil {
 		return err

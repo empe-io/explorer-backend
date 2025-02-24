@@ -57,8 +57,6 @@ type Sources struct {
 }
 
 func BuildSources(nodeCfg nodeconfig.Config, encodingConfig params.EncodingConfig) (*Sources, error) {
-	fmt.Println(fmt.Sprintf("nodeCfg: %#v", nodeCfg))
-	fmt.Println(fmt.Sprintf("nodeCfg details: %#v", nodeCfg.Details))
 	switch cfg := nodeCfg.Details.(type) {
 	case *remote.Details:
 		return buildRemoteSources(cfg)
@@ -116,8 +114,8 @@ func buildLocalSources(cfg *local.Details, encodingConfig params.EncodingConfig)
 }
 
 func buildRemoteSources(cfg *remote.Details) (*Sources, error) {
-	fmt.Println(fmt.Sprintf("cfg.GRPC: %#v", cfg.GRPC))
 	source, err := remote.NewSource(cfg.GRPC)
+	source.GrpcConn = remotemintsource.MustCreateGrpcConnection(cfg.GRPC)
 	if err != nil {
 		return nil, fmt.Errorf("error while creating remote source: %s", err)
 	}

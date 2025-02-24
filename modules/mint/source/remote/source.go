@@ -1,8 +1,6 @@
 package remote
 
 import (
-	"context"
-	"fmt"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	cfeminter "github.com/empe-io/empe-chain/x/cfeminter/types"
 	mintsource "github.com/forbole/callisto/v4/modules/mint/source"
@@ -29,20 +27,11 @@ func NewSource(source *remote.Source, querier cfeminter.QueryClient) *Source {
 
 // GetInflation implements mintsource.Source
 func (s Source) GetInflation(height int64) (sdk.Dec, error) {
-	//res, err := s.querier.Params(remote.GetHeightRequestContext(s.Ctx, height), &cfeminter.QueryParamsRequest{})
-	//if err != nil {
-	//	return sdk.ZeroDec(), err
-	//}
-	//fmt.Println(res)
-	//fmt.Println(fmt.Sprintf("Params: %#v", res))
-
-	res2, err := s.querier.Inflation(context.Background(), &cfeminter.QueryInflationRequest{})
+	res, err := s.querier.Inflation(remote.GetHeightRequestContext(s.Ctx, height), &cfeminter.QueryInflationRequest{})
 	if err != nil {
 		return sdk.ZeroDec(), err
 	}
-	fmt.Println(res2)
-	fmt.Println(fmt.Sprintf("Inflation: %#v", res2))
-	return res2.Inflation, nil
+	return res.Inflation, nil
 }
 
 // Params implements mintsource.Source
