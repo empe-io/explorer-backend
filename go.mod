@@ -6,11 +6,11 @@ toolchain go1.22.1
 
 require (
 	cosmossdk.io/math v1.4.0
-	cosmossdk.io/simapp v0.0.0-20230712090904-031162fbb96e
+	github.com/CosmWasm/wasmd v0.45.0
 	github.com/cometbft/cometbft v0.37.5
 	github.com/cosmos/cosmos-sdk v0.47.15
 	github.com/cosmos/gogoproto v1.7.0
-	github.com/empe-io/empe-chain v0.3.0-beta
+	github.com/empe-io/empe-chain v0.3.0-beta2
 	github.com/forbole/juno/v5 v5.2.1-0.20240201075935-851426ddd905
 	github.com/go-co-op/gocron v1.37.0
 	github.com/gogo/protobuf v1.3.2
@@ -40,6 +40,7 @@ require (
 	cosmossdk.io/depinject v1.0.0-alpha.4 // indirect
 	cosmossdk.io/errors v1.0.1 // indirect
 	cosmossdk.io/log v1.4.1 // indirect
+	cosmossdk.io/simapp v0.0.0-20230712090904-031162fbb96e // indirect
 	cosmossdk.io/tools/rosetta v0.2.1 // indirect
 	filippo.io/edwards25519 v1.0.0 // indirect
 	github.com/4meepo/tagalign v1.3.3 // indirect
@@ -51,7 +52,6 @@ require (
 	github.com/Antonboom/testifylint v0.2.3 // indirect
 	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/ChainSafe/go-schnorrkel v1.0.0 // indirect
-	github.com/CosmWasm/wasmd v0.45.0 // indirect
 	github.com/CosmWasm/wasmvm v1.5.2 // indirect
 	github.com/DataDog/zstd v1.5.0 // indirect
 	github.com/Djarvur/go-err113 v0.0.0-20210108212216-aea10b59be24 // indirect
@@ -251,7 +251,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/polyfloyd/go-errorlint v1.4.5 // indirect
-	github.com/prometheus/client_model v0.5.0 // indirect
+	github.com/prometheus/client_model v0.6.0 // indirect
 	github.com/prometheus/common v0.45.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/quasilyte/go-ruleguard v0.4.0 // indirect
@@ -351,8 +351,18 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
-// This is to avoid warnings while running the binary
-// See here: https://github.com/desmos-labs/desmos/pull/1131#discussion_r1194090419
-replace github.com/cosmos/gogoproto => github.com/cosmos/gogoproto v1.4.10
+replace (
+	// Use cosmos keyring
+	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
 
-replace golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
+	// TODO Remove it: https://github.com/cosmos/cosmos-sdk/issues/10409
+	github.com/gin-gonic/gin => github.com/gin-gonic/gin v1.8.1
+
+	// following versions might cause unexpected behavior
+	github.com/syndtr/goleveldb => github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7
+
+	// we need to replace it to make it work with latest ledger devices
+	github.com/zondax/ledger-go v0.14.3 => github.com/zondax/ledger-go v1.0.0
+	// lock exp
+	golang.org/x/exp => golang.org/x/exp v0.0.0-20230711153332-06a737ee72cb
+)

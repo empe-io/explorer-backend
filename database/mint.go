@@ -1,12 +1,16 @@
 package database
 
 import (
-	"encoding/json"
 	"fmt"
+	params2 "github.com/empe-io/empe-chain/app/params"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/forbole/callisto/v4/types"
+)
+
+var (
+	encodeConfig = params2.MakeEncodingConfig()
 )
 
 // SaveInflation allows to store the inflation for the given block height as well as timestamp
@@ -29,7 +33,7 @@ WHERE inflation.height <= excluded.height`
 
 // SaveMintParams allows to store the given params inside the database
 func (db *Db) SaveMintParams(params *types.MintParams) error {
-	paramsBz, err := json.Marshal(&params.Params)
+	paramsBz, err := encodeConfig.Marshaler.MarshalJSON(&params.Params)
 	if err != nil {
 		return fmt.Errorf("error while marshaling mint params: %s", err)
 	}
