@@ -2,6 +2,7 @@ package modules
 
 import (
 	"github.com/forbole/callisto/v4/modules/actions"
+	"github.com/forbole/callisto/v4/modules/circulating_supply"
 	"github.com/forbole/callisto/v4/modules/diddoc"
 	"github.com/forbole/callisto/v4/modules/types"
 
@@ -76,7 +77,6 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 		panic(err)
 	}
 
-	actionsModule := actions.NewModule(ctx.JunoConfig, ctx.EncodingConfig)
 	authModule := auth.NewModule(sources.AuthSource, r.parser, cdc, db)
 	bankModule := bank.NewModule(r.parser, sources.BankSource, cdc, db)
 	consensusModule := consensus.NewModule(db)
@@ -91,6 +91,8 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 	upgradeModule := upgrade.NewModule(db, stakingModule)
 	didDocModule := diddoc.NewModule(cdc, db)
 	topAccountsModule := topaccounts.NewModule(authModule, sources.AuthSource, bankModule, distrModule, stakingModule, r.parser, cdc, ctx.Proxy, db)
+	circulatingSupplyModule := circulating_supply.NewModule(authModule, bankModule, distrModule, stakingModule, r.parser, cdc, ctx.Proxy, db)
+	actionsModule := actions.NewModule(ctx.JunoConfig, ctx.EncodingConfig, bankModule, circulatingSupplyModule)
 
 	return []jmodules.Module{
 		messages.NewModule(r.parser, cdc, ctx.Database),
@@ -114,5 +116,6 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 		upgradeModule,
 		didDocModule,
 		topAccountsModule,
+		circulatingSupplyModule,
 	}
 }

@@ -2,6 +2,7 @@ package bank
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/go-co-op/gocron"
 	"github.com/rs/zerolog/log"
@@ -38,4 +39,12 @@ func (m *Module) UpdateSupply() error {
 	}
 
 	return m.db.SaveSupply(supply, block.Height)
+}
+
+func (m *Module) GetSupply(height int64) (types.Coins, error) {
+	return m.keeper.GetSupply(height)
+}
+
+func (m *Module) GetLatestSupply() (types.Coins, error) {
+	return m.keeper.GetLatestSupply()
 }

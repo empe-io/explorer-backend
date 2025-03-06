@@ -2,6 +2,7 @@ package distribution
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/go-co-op/gocron"
 	"github.com/rs/zerolog/log"
@@ -15,7 +16,7 @@ func (m *Module) RegisterPeriodicOperations(scheduler *gocron.Scheduler) error {
 
 	// Update the community pool every 1 hour
 	if _, err := scheduler.Every(1).Hour().Do(func() {
-		utils.WatchMethod(m.GetLatestCommunityPool)
+		utils.WatchMethod(m.UpdateLatestCommunityPool)
 	}); err != nil {
 		return fmt.Errorf("error while scheduling distribution periodic operation: %s", err)
 	}
@@ -23,12 +24,16 @@ func (m *Module) RegisterPeriodicOperations(scheduler *gocron.Scheduler) error {
 	return nil
 }
 
-// GetLatestCommunityPool gets the latest community pool from the chain and stores inside the database
-func (m *Module) GetLatestCommunityPool() error {
+// UpdateLatestCommunityPool gets the latest community pool from the chain and stores inside the database
+func (m *Module) UpdateLatestCommunityPool() error {
 	block, err := m.db.GetLastBlockHeightAndTimestamp()
 	if err != nil {
 		return fmt.Errorf("error while getting latest block height: %s", err)
 	}
 
 	return m.updateCommunityPool(block.Height)
+}
+
+func (m *Module) GetLatestCommunityPool() (types.DecCoins, error) {
+	return m.source.GetLatestCommunityPool()
 }

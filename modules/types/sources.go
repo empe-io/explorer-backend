@@ -47,10 +47,11 @@ import (
 )
 
 type Sources struct {
-	AuthSource     authsource.Source
-	BankSource     banksource.Source
-	DistrSource    distrsource.Source
-	GovSource      govsource.Source
+	AuthSource  authsource.Source
+	BankSource  banksource.Source
+	DistrSource distrsource.Source
+	GovSource   govsource.Source
+
 	MintSource     mintsource.Source
 	SlashingSource slashingsource.Source
 	StakingSource  stakingsource.Source

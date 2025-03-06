@@ -71,6 +71,21 @@ func (s Source) GetAllAnyAccounts(height int64) ([]*codectypes.Any, error) {
 	return accounts, nil
 }
 
+func (s Source) GetAnyAccount(address string, height int64) (*codectypes.Any, error) {
+	ctx := remote.GetHeightRequestContext(s.Ctx, height)
+
+	res, err := s.authClient.Account(
+		ctx,
+		&authtypes.QueryAccountRequest{
+			Address: address,
+		})
+	if err != nil {
+		return nil, fmt.Errorf("error while getting account from source: %s", err)
+	}
+
+	return res.Account, nil
+}
+
 func (s Source) GetTotalNumberOfAccounts(height int64) (uint64, error) {
 	ctx := remote.GetHeightRequestContext(s.Ctx, height)
 

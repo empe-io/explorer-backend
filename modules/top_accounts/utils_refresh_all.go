@@ -28,6 +28,11 @@ func (m *Module) RefreshAll(address string) error {
 		return fmt.Errorf("error while refreshing unbonding delegations of account %s, error: %s", address, err)
 	}
 
+	err = m.authModule.RefreshVestingAccount(address, height)
+	if err != nil {
+		return fmt.Errorf("error while refreshing vesting account of account %s, error: %s", address, err)
+	}
+
 	err = m.distrModule.RefreshDelegatorRewards([]string{address}, height)
 	if err != nil {
 		return fmt.Errorf("error while refreshing rewards of account %s, error: %s", address, err)

@@ -41,6 +41,14 @@ func (m *Module) RunAdditionalOperations() error {
 	worker.RegisterHandler("/validator_redelegations_from", handlers.ValidatorRedelegationsFromHandler)
 	worker.RegisterHandler("/validator_unbonding_delegations", handlers.ValidatorUnbondingDelegationsHandler)
 
+	worker.RegisterGetHandler("/circulating_supply", func(context *actionstypes.Context) (interface{}, error) {
+		return handlers.CirculatingSupply(m.circulatingSupplyModule)
+	})
+
+	worker.RegisterGetHandler("/total_supply", func(context *actionstypes.Context) (interface{}, error) {
+		return handlers.TotalSupply(m.bankModule)
+	})
+
 	// Listen for and trap any OS signal to gracefully shutdown and exit
 	m.trapSignal()
 

@@ -2,6 +2,7 @@ package auth
 
 import (
 	"encoding/json"
+	"github.com/cosmos/cosmos-sdk/codec/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	authttypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -15,9 +16,12 @@ func GetGenesisVestingAccounts(appState map[string]json.RawMessage, cdc codec.Co
 		return nil, err
 	}
 
-	// Build vestingAccounts Array
+	return buildVestingAccounts(authState.Accounts, cdc)
+}
+
+func buildVestingAccounts(accounts []*types.Any, cdc codec.Codec) ([]exported.VestingAccount, error) {
 	var vestingAccounts []exported.VestingAccount
-	for _, account := range authState.Accounts {
+	for _, account := range accounts {
 		var accountI authttypes.AccountI
 		err := cdc.UnpackAny(account, &accountI)
 		if err != nil {

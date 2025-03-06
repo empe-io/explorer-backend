@@ -33,6 +33,5 @@ func (w Worker) start() {
 				w.queue <- address
 			}(address)
 		}
-
 	}
 }

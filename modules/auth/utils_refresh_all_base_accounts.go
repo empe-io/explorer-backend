@@ -2,12 +2,31 @@ package auth
 
 import (
 	"fmt"
+	"github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
+	"time"
 
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	authttypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/forbole/callisto/v4/types"
 	"github.com/rs/zerolog/log"
 )
+
+func (m *Module) GetAllVestingAccounts() ([]exported.VestingAccount, error) {
+	return m.db.GetAllVestingAccounts()
+}
+
+func (m *Module) GetCurrentlyLockedAmountSum(currentTime time.Time) (int64, error) {
+	return m.db.GetCurrentlyLockedAmountSum(currentTime)
+}
+
+func (m *Module) GetAllModuleAccountsTokensSum() (int64, error) {
+	return m.db.GetAllModuleAccountsTokensSum()
+}
+
+func (m *Module) GetAvailableTokensSum(addresses []string) (int64, error) {
+	return m.db.GetAvailableTokensSum(addresses)
+}
 
 func (m *Module) GetAllBaseAccounts(height int64) ([]types.Account, error) {
 	anyAccounts, err := m.source.GetAllAnyAccounts(height)
@@ -20,7 +39,36 @@ func (m *Module) GetAllBaseAccounts(height int64) ([]types.Account, error) {
 	}
 
 	return unpacked, nil
+}
 
+func (m *Module) GetAnyAccount(address string, height int64) (*codectypes.Any, error) {
+	return m.source.GetAnyAccount(address, height)
+}
+
+func (m *Module) RefreshVestingAccount(address string, height int64) error {
+	anyAccount, err := m.GetAnyAccount(address, height)
+	if err != nil {
+		return fmt.Errorf("error while getting any account: %s", err)
+	}
+
+	var accountI authttypes.AccountI
+	err = m.cdc.UnpackAny(anyAccount, &accountI)
+	if err != nil {
+		return err
+	}
+
+	vestingAccount, ok := accountI.(exported.VestingAccount)
+	if !ok {
+		return nil
+	}
+
+	// Store the vesting account
+	err = m.db.SaveVestingAccount(vestingAccount)
+	if err != nil {
+		return fmt.Errorf("error while saving vesting account: %s", err)
+	}
+
+	return nil
 }
 
 func (m *Module) RefreshTopAccountsList(height int64) ([]types.Account, error) {

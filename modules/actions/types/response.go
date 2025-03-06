@@ -99,3 +99,9 @@ type RedelegationEntry struct {
 	CompletionTime time.Time   `json:"completion_time"`
 	Balance        sdkmath.Int `json:"balance"`
 }
+
+// ========================= Supplies Response =========================
+
+type CirculatingSupplyResponse struct {
+	CirculatingSupply int64 `json:"circulating_supply"`
+}

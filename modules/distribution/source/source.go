@@ -10,5 +10,6 @@ type Source interface {
 	DelegatorTotalRewards(delegator string, height int64) ([]distrtypes.DelegationDelegatorReward, error)
 	DelegatorWithdrawAddress(delegator string, height int64) (string, error)
 	CommunityPool(height int64) (sdk.DecCoins, error)
+	GetLatestCommunityPool() (sdk.DecCoins, error)
 	Params(height int64) (distrtypes.Params, error)
 }

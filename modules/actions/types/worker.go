@@ -76,6 +76,40 @@ func (w *ActionsWorker) RegisterHandler(path string, handler ActionHandler) {
 	})
 }
 
+// RegisterHandler registers the provided handler to be used on each call to the provided path
+func (w *ActionsWorker) RegisterGetHandler(path string, handler ActionGetHandler) {
+	log.Debug().Str("action", path).Msg("registering actions handler")
+	w.mux.HandleFunc(path, func(writer http.ResponseWriter, request *http.Request) {
+		start := time.Now()
+
+		// Set the content type
+		writer.Header().Set("Content-Type", "application/json")
+
+		// Handle the request
+		res, err := handler(w.context)
+		if err != nil {
+			logging.ErrorCounter(path)
+			w.handleError(writer, path, err)
+			return
+		}
+
+		// Marshal the response
+		data, err := json.Marshal(res)
+		if err != nil {
+			logging.ErrorCounter(path)
+			w.handleError(writer, path, err)
+			return
+		}
+
+		// Prometheus
+		logging.SuccessCounter(path)
+		logging.ReponseTimeBuckets(path, start)
+
+		// Write the response
+		writer.Write(data)
+	})
+}
+
 // handleError allows to handle the given error by writing it to the provided writer
 func (w *ActionsWorker) handleError(writer http.ResponseWriter, path string, err error) {
 	log.Error().Str("action", path).

@@ -2,6 +2,8 @@ package mint
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	authsource "github.com/forbole/callisto/v4/modules/auth/source"
+	banksource "github.com/forbole/callisto/v4/modules/bank/source"
 	"github.com/forbole/juno/v5/modules"
 
 	"github.com/forbole/callisto/v4/database"
@@ -16,9 +18,11 @@ var (
 
 // Module represent database/mint module
 type Module struct {
-	cdc    codec.Codec
-	db     *database.Db
-	source mintsource.Source
+	cdc        codec.Codec
+	db         *database.Db
+	source     mintsource.Source
+	authSource authsource.Source
+	bankSource banksource.Source
 }
 
 // NewModule returns a new Module instance
