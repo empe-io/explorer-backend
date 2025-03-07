@@ -4,17 +4,16 @@ import (
 	"fmt"
 )
 
-// SaveCirculatingSupply allows to store the circulating supply at the given height
+// SaveCirculatingSupply stores a circulating supply record at the given height.
+// If a record for that height already exists, it updates the supply value.
 func (db *Db) SaveCirculatingSupply(circulatingSupply int64, height int64) error {
 	stmt := `
-INSERT INTO circulating_supply (value, height) 
-VALUES ($1, $2) 
-ON CONFLICT (one_row_id) DO UPDATE 
-    SET value = excluded.value, 
-        height = excluded.height 
-WHERE circulating_supply.height <= excluded.height`
-
-	_, err := db.SQL.Exec(stmt, circulatingSupply, height)
+INSERT INTO circulating_supply (height, value)
+VALUES ($1, $2)
+ON CONFLICT (height) DO UPDATE 
+    SET value = EXCLUDED.value;
+`
+	_, err := db.SQL.Exec(stmt, height, circulatingSupply)
 	if err != nil {
 		return fmt.Errorf("error while storing circulatingSupply: %s", err)
 	}

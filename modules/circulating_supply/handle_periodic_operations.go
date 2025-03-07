@@ -26,8 +26,8 @@ func (m *Module) RegisterPeriodicOperations(scheduler *gocron.Scheduler) error {
 // UpdateCirculatingSupply fetches the total amount of coins in the system from RPC and stores it in database
 func (m *Module) UpdateCirculatingSupply() error {
 	log.Debug().
-		Str("module", "circulatingSupply").
-		Str("operation", "circulatingSupply").
+		Str("module", "circulating_supply").
+		Str("operation", "circulating_supply").
 		Msg("updating circulating supply")
 
 	block, err := m.db.GetLastBlockHeightAndTimestamp()
@@ -43,24 +43,24 @@ func (m *Module) UpdateCirculatingSupply() error {
 	if err != nil {
 		return err
 	}
-	log.Debug().Str("module", "circulatingSupply").Int64("lockedTokensSum", vestingAccountsLockedSum).Int64("moduleAccountsSum", moduleAccoutnsSum).Msg("locked tokens sum")
+	log.Debug().Str("module", "circulating_supply").Int64("lockedTokensSum", vestingAccountsLockedSum).Int64("moduleAccountsSum", moduleAccoutnsSum)
 
 	totalSupply, err := m.bankModule.GetSupply(block.Height)
 	if err != nil {
 		return err
 	}
 	totalSupplyAmount := totalSupply.AmountOf(DENOM).Int64()
-	log.Debug().Str("module", "circulatingSupply").Int64("totalSupplyAmount", totalSupplyAmount).Msg("total supply amount")
+	log.Debug().Str("module", "circulating_supply").Int64("totalSupplyAmount", totalSupplyAmount)
 
 	communityPool, err := m.distrModule.GetLatestCommunityPool()
 	if err != nil {
 		return err
 	}
 	communityPoolAmount := communityPool.AmountOf(DENOM).TruncateInt64()
-	log.Debug().Str("module", "circulatingSupply").Int64("communityPoolAmount", communityPoolAmount).Msg("community pool amount")
+	log.Debug().Str("module", "circulating_supply").Int64("communityPoolAmount", communityPoolAmount)
 
 	circulatingSupply := totalSupplyAmount - vestingAccountsLockedSum - moduleAccoutnsSum - communityPoolAmount
-	log.Debug().Str("module", "circulatingSupply").Int64("circulatingSupply", circulatingSupply).Msg("circulating supply")
+	log.Debug().Str("module", "circulating_supply").Int64("circulatingSupply", circulatingSupply)
 
 	return m.db.SaveCirculatingSupply(circulatingSupply, block.Height)
 }

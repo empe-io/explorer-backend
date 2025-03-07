@@ -1,4 +1,4 @@
-package circulating_supply
+package fees
 
 import (
 	"github.com/forbole/callisto/v4/database"
@@ -11,28 +11,19 @@ var (
 
 // Module represent x/top_accounts module
 type Module struct {
-	db          *database.Db
-	authModule  AuthModule
-	bankModule  BankModule
-	distrModule DistrModule
+	db *database.Db
 }
 
 // NewModule returns a new Module instance
 func NewModule(
-	authModule AuthModule,
-	bankModule BankModule,
-	distrModule DistrModule,
 	db *database.Db,
 ) *Module {
 	return &Module{
-		authModule:  authModule,
-		bankModule:  bankModule,
-		distrModule: distrModule,
-		db:          db,
+		db: db,
 	}
 }
 
 // Name implements modules.Module
 func (m *Module) Name() string {
-	return "circulating_supply"
+	return "fees"
 }

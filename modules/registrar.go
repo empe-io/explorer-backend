@@ -4,6 +4,7 @@ import (
 	"github.com/forbole/callisto/v4/modules/actions"
 	"github.com/forbole/callisto/v4/modules/circulating_supply"
 	"github.com/forbole/callisto/v4/modules/diddoc"
+	"github.com/forbole/callisto/v4/modules/fees"
 	"github.com/forbole/callisto/v4/modules/types"
 
 	"github.com/forbole/juno/v5/modules/pruning"
@@ -91,7 +92,8 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 	upgradeModule := upgrade.NewModule(db, stakingModule)
 	didDocModule := diddoc.NewModule(cdc, db)
 	topAccountsModule := topaccounts.NewModule(authModule, sources.AuthSource, bankModule, distrModule, stakingModule, r.parser, cdc, ctx.Proxy, db)
-	circulatingSupplyModule := circulating_supply.NewModule(authModule, bankModule, distrModule, stakingModule, r.parser, cdc, ctx.Proxy, db)
+	circulatingSupplyModule := circulating_supply.NewModule(authModule, bankModule, distrModule, db)
+	feesModule := fees.NewModule(db)
 	actionsModule := actions.NewModule(ctx.JunoConfig, ctx.EncodingConfig, bankModule, circulatingSupplyModule)
 
 	return []jmodules.Module{
@@ -117,5 +119,6 @@ func (r *Registrar) BuildModules(ctx registrar.Context) jmodules.Modules {
 		didDocModule,
 		topAccountsModule,
 		circulatingSupplyModule,
+		feesModule,
 	}
 }
