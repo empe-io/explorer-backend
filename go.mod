@@ -10,7 +10,7 @@ require (
 	github.com/cometbft/cometbft v0.37.5
 	github.com/cosmos/cosmos-sdk v0.47.15
 	github.com/cosmos/gogoproto v1.7.0
-	github.com/empe-io/empe-chain v0.3.0-beta2
+	github.com/empe-io/empe-chain v0.3.0
 	github.com/forbole/juno/v5 v5.2.1-0.20240201075935-851426ddd905
 	github.com/go-co-op/gocron v1.37.0
 	github.com/gogo/protobuf v1.3.2

@@ -2,9 +2,8 @@ package handlers
 
 import (
 	"fmt"
+	"github.com/forbole/callisto/v4/types/config"
 )
-
-const DENOM = "uempe"
 
 func CirculatingSupply(circulatingSupplyModule CirculatingSupplyModule) (interface{}, error) {
 	circulatingSupply, err := circulatingSupplyModule.GetLatestCirculatingSupply()
@@ -23,7 +22,7 @@ func TotalSupply(bankModule BankModule) (interface{}, error) {
 		return nil, fmt.Errorf("error while getting circulating supply: %s", err)
 	}
 
-	totalSupplyAmount := totalSupply.AmountOf(DENOM).Int64()
+	totalSupplyAmount := totalSupply.AmountOf(config.GetDenom()).Int64()
 
 	formattedSupply := float64(totalSupplyAmount) / 1000000
 

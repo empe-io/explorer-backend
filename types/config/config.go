@@ -9,6 +9,8 @@ import (
 	"github.com/forbole/callisto/v4/modules/actions"
 )
 
+const DENOM = "uempe"
+
 // Config represents the Callisto configuration
 type Config struct {
 	JunoConfig    junoconfig.Config `yaml:"-,inline"`
@@ -31,4 +33,8 @@ func (c Config) GetBytes() ([]byte, error) {
 // Creator represents a configuration creator
 func Creator(_ *cobra.Command) initcmd.WritableConfig {
 	return NewConfig(junoconfig.DefaultConfig(), actions.DefaultConfig())
+}
+
+func GetDenom() string {
+	return DENOM
 }

@@ -2,13 +2,12 @@ package circulating_supply
 
 import (
 	"fmt"
+	"github.com/forbole/callisto/v4/types/config"
 	"github.com/go-co-op/gocron"
 	"github.com/rs/zerolog/log"
 
 	"github.com/forbole/callisto/v4/modules/utils"
 )
-
-const DENOM = "uempe"
 
 // RegisterPeriodicOperations implements modules.PeriodicOperationsModule
 func (m *Module) RegisterPeriodicOperations(scheduler *gocron.Scheduler) error {
@@ -49,14 +48,16 @@ func (m *Module) UpdateCirculatingSupply() error {
 	if err != nil {
 		return err
 	}
-	totalSupplyAmount := totalSupply.AmountOf(DENOM).Int64()
+	denom := config.GetDenom()
+
+	totalSupplyAmount := totalSupply.AmountOf(denom).Int64()
 	log.Debug().Str("module", "circulatingSupply").Int64("totalSupplyAmount", totalSupplyAmount).Msg("total supply amount")
 
 	communityPool, err := m.distrModule.GetLatestCommunityPool()
 	if err != nil {
 		return err
 	}
-	communityPoolAmount := communityPool.AmountOf(DENOM).TruncateInt64()
+	communityPoolAmount := communityPool.AmountOf(denom).TruncateInt64()
 	log.Debug().Str("module", "circulatingSupply").Int64("communityPoolAmount", communityPoolAmount).Msg("community pool amount")
 
 	circulatingSupply := totalSupplyAmount - vestingAccountsLockedSum - moduleAccoutnsSum - communityPoolAmount
