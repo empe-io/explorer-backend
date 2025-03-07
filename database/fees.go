@@ -52,15 +52,35 @@ WITH tx AS (
 fee_total AS (
     SELECT COALESCE(SUM((replace(fee_elem->>'amount', '"', '')::numeric)), 0) AS total_fee
     FROM tx,
-         jsonb_array_elements(fee->'amount') AS fee_elem
+         jsonb_array_elements(
+            CASE WHEN jsonb_typeof(fee->'amount') = 'array'
+                 THEN fee->'amount'
+                 ELSE '[]'::jsonb
+            END
+         ) AS fee_elem
     WHERE fee_elem->>'denom' = 'uempe'
 ),
 event_total AS (
     SELECT COALESCE(SUM((replace(attr->>'value', '"', '')::numeric)), 0) AS total_event
     FROM tx,
-         jsonb_array_elements(logs) AS log,
-         jsonb_array_elements(log->'events') AS event,
-         jsonb_array_elements(event->'attributes') AS attr
+         jsonb_array_elements(
+           CASE WHEN jsonb_typeof(logs) = 'array'
+                THEN logs
+                ELSE '[]'::jsonb
+           END
+         ) AS log,
+         jsonb_array_elements(
+           CASE WHEN jsonb_typeof(log->'events') = 'array'
+                THEN log->'events'
+                ELSE '[]'::jsonb
+           END
+         ) AS event,
+         jsonb_array_elements(
+           CASE WHEN jsonb_typeof(event->'attributes') = 'array'
+                THEN event->'attributes'
+                ELSE '[]'::jsonb
+           END
+         ) AS attr
     WHERE event->>'type' = 'empe.stablefee.EventChargeFee'
       AND attr->>'key' = 'uempeAmount'
 )
