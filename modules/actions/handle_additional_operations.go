@@ -19,6 +19,8 @@ func (m *Module) RunAdditionalOperations() error {
 	context := actionstypes.NewContext(m.node, m.sources)
 	worker := actionstypes.NewActionsWorker(context)
 
+	worker.SetCORSAllowAll()
+
 	// Register the endpoints
 
 	// -- Bank --
