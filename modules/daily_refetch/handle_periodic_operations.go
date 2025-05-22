@@ -61,6 +61,7 @@ func (m *Module) refetchMissingBlocks() error {
 		Msg("getting missing blocks and transactions from a day ago")
 	for _, block := range missingBlocks {
 		err = worker.Process(block)
+
 		if err != nil {
 			return fmt.Errorf("error while re-fetching block %d: %s", block, err)
 		}

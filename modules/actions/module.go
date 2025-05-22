@@ -1,6 +1,7 @@
 package actions
 
 import (
+	"github.com/forbole/callisto/v4/modules/actions/handlers"
 	"github.com/forbole/juno/v5/modules"
 	"github.com/forbole/juno/v5/node"
 	"github.com/forbole/juno/v5/node/builder"
@@ -21,12 +22,15 @@ var (
 )
 
 type Module struct {
-	cfg     *Config
-	node    node.Node
-	sources *modulestypes.Sources
+	cfg                     *Config
+	node                    node.Node
+	sources                 *modulestypes.Sources
+	bankModule              handlers.BankModule
+	circulatingSupplyModule handlers.CirculatingSupplyModule
 }
 
-func NewModule(cfg config.Config, encodingConfig params.EncodingConfig) *Module {
+func NewModule(cfg config.Config, encodingConfig params.EncodingConfig, bankModule handlers.BankModule,
+	circulatingSupplyModule handlers.CirculatingSupplyModule) *Module {
 	bz, err := cfg.GetBytes()
 	if err != nil {
 		panic(err)
@@ -55,9 +59,11 @@ func NewModule(cfg config.Config, encodingConfig params.EncodingConfig) *Module 
 	}
 
 	return &Module{
-		cfg:     actionsCfg,
-		node:    junoNode,
-		sources: sources,
+		cfg:                     actionsCfg,
+		node:                    junoNode,
+		sources:                 sources,
+		bankModule:              bankModule,
+		circulatingSupplyModule: circulatingSupplyModule,
 	}
 }
 

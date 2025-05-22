@@ -21,3 +21,19 @@ func SplitAccounts(accounts []types.Account, paramsNumber int) [][]types.Account
 
 	return slices
 }
+
+func SplitTopAccounts(accounts []types.TopAccount, paramsNumber int) [][]types.TopAccount {
+	maxBalancesPerSlice := maxPostgreSQLParams / paramsNumber
+	slices := make([][]types.TopAccount, len(accounts)/maxBalancesPerSlice+1)
+
+	sliceIndex := 0
+	for index, account := range accounts {
+		slices[sliceIndex] = append(slices[sliceIndex], account)
+
+		if index > 0 && index%(maxBalancesPerSlice-1) == 0 {
+			sliceIndex++
+		}
+	}
+
+	return slices
+}

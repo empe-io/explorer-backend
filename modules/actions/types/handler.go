@@ -38,3 +38,7 @@ func (c *Context) GetHeight(payload *Payload) (int64, error) {
 // ActionHandler represents a Hasura action request handler.
 // It returns an interface to be returned to the called, or an error if something is wrong
 type ActionHandler = func(context *Context, payload *Payload) (interface{}, error)
+
+// ActionHandler represents a Hasura action request handler.
+// It returns an interface to be returned to the called, or an error if something is wrong
+type ActionGetHandler = func(context *Context) (interface{}, error)

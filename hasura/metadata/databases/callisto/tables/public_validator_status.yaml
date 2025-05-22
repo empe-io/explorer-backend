@@ -1,5 +1,5 @@
 table:
-  name: validator_commission
+  name: validator_status
   schema: public
 object_relationships:
 - name: validator
@@ -7,12 +7,12 @@ object_relationships:
     foreign_key_constraint_on: validator_address
 select_permissions:
 - permission:
-    allow_aggregations: false
+    allow_aggregations: true
     columns:
     - validator_address
-    - commission
-    - min_self_delegation
+    - status
+    - jailed
     - height
     filter: {}
-    limit: 100
+    limit: 1000
   role: anonymous

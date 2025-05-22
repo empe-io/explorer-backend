@@ -34,7 +34,7 @@ func communityPoolCmd(parseConfig *parsecmdtypes.Config) *cobra.Command {
 			// Build distribution module
 			distrModule := distribution.NewModule(sources.DistrSource, parseCtx.EncodingConfig.Codec, db)
 
-			err = distrModule.GetLatestCommunityPool()
+			err = distrModule.UpdateLatestCommunityPool()
 			if err != nil {
 				return fmt.Errorf("error while updating community pool: %s", err)
 			}

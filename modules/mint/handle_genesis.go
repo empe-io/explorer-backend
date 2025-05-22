@@ -3,12 +3,13 @@ package mint
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/CosmWasm/wasmd/app"
 
 	tmtypes "github.com/cometbft/cometbft/types"
 
+	cfemintertypes "github.com/empe-io/empe-chain/x/cfeminter/types"
 	"github.com/forbole/callisto/v4/types"
 
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	"github.com/rs/zerolog/log"
 )
 
@@ -17,8 +18,8 @@ func (m *Module) HandleGenesis(doc *tmtypes.GenesisDoc, appState map[string]json
 	log.Debug().Str("module", "mint").Msg("parsing genesis")
 
 	// Read the genesis state
-	var genState minttypes.GenesisState
-	err := m.cdc.UnmarshalJSON(appState[minttypes.ModuleName], &genState)
+	var genState cfemintertypes.GenesisState
+	err := app.MakeEncodingConfig().Codec.UnmarshalJSON(appState[cfemintertypes.ModuleName], &genState)
 	if err != nil {
 		return fmt.Errorf("error while reading mint genesis data: %s", err)
 	}

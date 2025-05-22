@@ -77,3 +77,20 @@ func (s Source) GetSupply(height int64) (sdk.Coins, error) {
 
 	return coins, nil
 }
+
+func (s Source) GetLatestSupply() (sdk.Coins, error) {
+	ctx := remote.GetHeightRequestContext(s.Ctx, 0)
+
+	res, err := s.bankClient.TotalSupply(
+		ctx,
+		&banktypes.QueryTotalSupplyRequest{
+			Pagination: &query.PageRequest{
+				Limit: 100, // Query 100 supplies at time
+			},
+		})
+	if err != nil {
+		return nil, fmt.Errorf("error while getting total supply: %s", err)
+	}
+
+	return res.Supply, nil
+}

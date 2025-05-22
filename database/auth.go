@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/x/auth/vesting/exported"
@@ -59,6 +60,28 @@ func (db *Db) saveAccounts(paramsNumber int, accounts []types.Account) error {
 	return nil
 }
 
+func (db *Db) SaveVestingAccount(account exported.VestingAccount) error {
+	switch vestingAccount := account.(type) {
+	case *vestingtypes.ContinuousVestingAccount, *vestingtypes.DelayedVestingAccount:
+		_, err := db.storeVestingAccount(account)
+		if err != nil {
+			return err
+		}
+
+	case *vestingtypes.PeriodicVestingAccount:
+		vestingAccountRowID, err := db.storeVestingAccount(account)
+		if err != nil {
+			return err
+		}
+		err = db.storeVestingPeriods(vestingAccountRowID, vestingAccount.VestingPeriods)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // SaveVestingAccounts saves the given vesting accounts inside the database
 func (db *Db) SaveVestingAccounts(vestingAccounts []exported.VestingAccount) error {
 	if len(vestingAccounts) == 0 {
@@ -66,26 +89,63 @@ func (db *Db) SaveVestingAccounts(vestingAccounts []exported.VestingAccount) err
 	}
 
 	for _, account := range vestingAccounts {
-		switch vestingAccount := account.(type) {
-		case *vestingtypes.ContinuousVestingAccount, *vestingtypes.DelayedVestingAccount:
-			_, err := db.storeVestingAccount(account)
-			if err != nil {
-				return err
-			}
-
-		case *vestingtypes.PeriodicVestingAccount:
-			vestingAccountRowID, err := db.storeVestingAccount(account)
-			if err != nil {
-				return err
-			}
-			err = db.storeVestingPeriods(vestingAccountRowID, vestingAccount.VestingPeriods)
-			if err != nil {
-				return err
-			}
+		err := db.SaveVestingAccount(account)
+		if err != nil {
+			return err
 		}
 	}
 
 	return nil
+}
+
+func (db *Db) GetCurrentlyLockedAmountSum(currentTime time.Time) (int64, error) {
+	var total int64
+	query := `
+		SELECT COALESCE(SUM(locked), 0)::bigint AS total_locked
+		FROM (
+			SELECT CASE
+				WHEN $1 <= start_time THEN coin.amount::numeric
+				WHEN $1 >= end_time THEN 0
+				ELSE coin.amount::numeric - ROUND(coin.amount::numeric * ((EXTRACT(EPOCH FROM $1) - EXTRACT(EPOCH FROM start_time)) / (EXTRACT(EPOCH FROM end_time) - EXTRACT(EPOCH FROM start_time))))
+			END AS locked
+			FROM vesting_account,
+			LATERAL unnest(original_vesting) AS coin
+			WHERE coin.denom = 'uempe'
+		) AS sub;
+	`
+	err := db.Sqlx.Get(&total, query, currentTime)
+	return total, err
+}
+
+func (db *Db) GetAllModuleAccountsTokensSum() (int64, error) {
+	var sum int64
+	err := db.Sqlx.Get(&sum, `
+		SELECT COALESCE(SUM("sum"), 0)
+		FROM top_accounts
+		WHERE type = 'cosmos.vesting.v1beta1.ModuleAccount'
+	`)
+	return sum, err
+}
+
+func (db *Db) GetAvailableTokensSum(addresses []string) (int64, error) {
+	var sum int64
+	query, args, err := sqlx.In(`
+		SELECT COALESCE(SUM(available), 0)
+		FROM top_accounts
+		WHERE address IN (?)
+	`, addresses)
+	if err != nil {
+		return 0, err
+	}
+	query = db.Sqlx.Rebind(query)
+	err = db.Sqlx.Get(&sum, query, args...)
+	return sum, err
+}
+
+func (db *Db) GetAllVestingAccounts() ([]exported.VestingAccount, error) {
+	var rows []exported.VestingAccount
+	err := db.Sqlx.Select(&rows, `SELECT * FROM vesting_account`)
+	return rows, err
 }
 
 func (db *Db) storeVestingAccount(account exported.VestingAccount) (int, error) {

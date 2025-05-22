@@ -96,3 +96,23 @@ func (s Source) GetAccountBalance(address string, height int64) ([]sdk.Coin, err
 
 	return balRes.Balances, nil
 }
+
+func (s Source) GetLatestSupply() (sdk.Coins, error) {
+	ctx, err := s.LoadHeight(0)
+	if err != nil {
+		return nil, fmt.Errorf("error while loading height: %s", err)
+	}
+
+	res, err := s.q.TotalSupply(
+		sdk.WrapSDKContext(ctx),
+		&banktypes.QueryTotalSupplyRequest{
+			Pagination: &query.PageRequest{
+				Limit: 100, // Query 100 supplies at time
+			},
+		})
+	if err != nil {
+		return nil, fmt.Errorf("error while getting total supply: %s", err)
+	}
+
+	return res.Supply, nil
+}

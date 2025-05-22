@@ -2,6 +2,8 @@ package gov
 
 import (
 	"fmt"
+	types2 "github.com/cosmos/cosmos-sdk/codec/types"
+	govtypesv1beta1 "github.com/cosmos/cosmos-sdk/x/gov/types/v1beta1"
 	"strconv"
 	"strings"
 	"time"
@@ -31,6 +33,19 @@ func (m *Module) HandleMsg(index int, msg sdk.Msg, tx *juno.Tx) error {
 	}
 
 	switch cosmosMsg := msg.(type) {
+	case *govtypesv1beta1.MsgSubmitProposal:
+		content := cosmosMsg.Content.GetCachedValue().(govtypesv1beta1.Content)
+
+		newMsg := &govtypesv1.MsgSubmitProposal{
+			Messages:       []*types2.Any{cosmosMsg.Content},
+			InitialDeposit: cosmosMsg.InitialDeposit,
+			Proposer:       cosmosMsg.Proposer,
+			Metadata:       "",
+			Title:          content.GetTitle(),
+			Summary:        content.GetDescription(),
+		}
+		return m.handleMsgSubmitProposal(tx, index, newMsg)
+
 	case *govtypesv1.MsgSubmitProposal:
 		return m.handleMsgSubmitProposal(tx, index, cosmosMsg)
 

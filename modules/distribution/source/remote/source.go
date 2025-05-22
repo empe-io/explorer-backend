@@ -51,3 +51,15 @@ func (s Source) Params(height int64) (distrtypes.Params, error) {
 
 	return res.Params, nil
 }
+
+func (s Source) GetLatestCommunityPool() (sdk.DecCoins, error) {
+	res, err := s.distrClient.CommunityPool(
+		s.Ctx,
+		&distrtypes.QueryCommunityPoolRequest{},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return res.Pool, nil
+}
